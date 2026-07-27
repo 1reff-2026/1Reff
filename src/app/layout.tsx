@@ -6,6 +6,9 @@ import { TopBar } from "@/components/TopBar";
 export const metadata: Metadata = {
   title: "1Reff | Intelligence Platform",
   description: "1Reff Relationship Intelligence Platform",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({

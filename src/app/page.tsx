@@ -4,6 +4,7 @@ import { redirect } from "next/navigation"
 import { PrismaClient } from "@prisma/client"
 import Link from "next/link"
 import { TypewriterText } from "@/components/TypewriterText"
+import { HomeAISearchWidget } from "@/components/HomeAISearchWidget"
 
 const prisma = new PrismaClient()
 
@@ -25,7 +26,7 @@ export default async function Dashboard() {
   const firstName = user?.name?.split(' ')[0]?.toUpperCase() || 'USER'
 
   return (
-    <div className="max-w-md mx-auto px-4 md:px-0 flex flex-col min-h-[calc(100vh-100px)] appear">
+    <div className="max-w-xl mx-auto px-4 md:px-0 flex flex-col min-h-[calc(100vh-100px)] appear">
       
       {/* Top Section: Centered */}
       <div className="flex-1 flex flex-col items-center justify-center space-y-4 pb-8">
@@ -43,12 +44,6 @@ export default async function Dashboard() {
           </h2>
         </div>
         
-        {/* Placeholder for instructions */}
-        <div className="w-full text-center mt-6">
-          <p className="text-[13px] text-muted-foreground/70 italic">
-            Instructions will appear here
-          </p>
-        </div>
       </div>
 
       {/* Bottom Section */}
@@ -98,6 +93,9 @@ export default async function Dashboard() {
               </div>
             </div>
           </Link>
+
+          {/* 3rd: AI Contact Search Widget */}
+          <HomeAISearchWidget />
         </div>
 
         {/* Banner */}

@@ -40,9 +40,10 @@ export default function Login() {
   return (
     <div className="flex items-center justify-center min-h-[80vh] appear">
       <Card className="w-full max-w-md glass beam-border">
-        <CardHeader className="text-center">
+        <CardHeader className="text-center flex flex-col items-center">
+          <img src="/logo.png" alt="1Reff Logo" className="h-24 w-auto object-contain mb-3" />
           <CardTitle className="text-2xl">Welcome Back</CardTitle>
-          <p className="text-sm text-muted-foreground mt-2">Log in to 1Reff</p>
+          <p className="text-sm text-muted-foreground mt-1">Log in to your account</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

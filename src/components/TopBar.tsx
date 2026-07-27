@@ -27,13 +27,8 @@ export async function TopBar() {
         </div>
 
         {/* Center: Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-full bg-[#5C45FD] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-          </div>
-          <h1 className="text-base font-bold tracking-tight font-display text-foreground">1Reff</h1>
+        <Link href="/" className="flex items-center group">
+          <img src="/logo.png" alt="1Reff Logo" className="h-10 w-auto object-contain group-hover:scale-105 transition-transform" />
         </Link>
 
         {/* Right Actions */}

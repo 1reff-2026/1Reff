@@ -2,26 +2,27 @@
 
 import { useState } from "react"
 import Link from "next/link"
-
+import { useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
 
 export function Sidebar() {
   const [isAddNewOpen, setIsAddNewOpen] = useState(false)
+  const [searchVal, setSearchVal] = useState("")
+  const router = useRouter()
+
+  const handleSearchSubmit = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchVal.trim()) {
+      router.push(`/ai-connect?q=${encodeURIComponent(searchVal.trim())}`)
+    }
+  }
 
   return (
     <aside className="w-[320px] border-r border-gray-100 bg-white hidden md:flex flex-col h-screen fixed left-0 top-0 z-40 overflow-y-auto shadow-[2px_0_15px_rgba(0,0,0,0.02)]">
       
       {/* Header */}
       <div className="flex items-center p-5 border-b border-gray-100 shrink-0">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-full bg-[#5C45FD] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-xl font-extrabold leading-none text-foreground tracking-tight">1Reff</h1>
-          </div>
+        <Link href="/" className="flex items-center group py-1">
+          <img src="/logo.png" alt="1Reff Logo" className="h-14 w-auto object-contain group-hover:scale-105 transition-transform" />
         </Link>
       </div>
 
@@ -39,8 +40,11 @@ export function Sidebar() {
               </div>
               <input
                 type="text"
+                value={searchVal}
+                onChange={(e) => setSearchVal(e.target.value)}
+                onKeyDown={handleSearchSubmit}
                 className="block w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded-lg text-[13px] focus:ring-2 focus:ring-[#5C45FD] focus:border-transparent transition-all shadow-sm placeholder-gray-400"
-                placeholder="Search"
+                placeholder="Search contacts & hit Enter..."
               />
             </div>
             <Link href="/notifications" className="relative p-2 text-slate-500 hover:bg-slate-100 rounded-xl transition-colors mb-2">
@@ -100,13 +104,25 @@ export function Sidebar() {
               <span className="text-[13px] font-semibold text-foreground tracking-wide group-hover:text-[#5C45FD] transition-colors">REFERRALS PASSED</span>
             </Link>
 
-            <Link href="/network" className="flex items-center gap-4 py-4 group">
+            <Link href="/network" className="flex items-center gap-4 py-4 border-b border-gray-100 group">
               <div className="w-9 h-9 rounded-full bg-[#5C45FD]/5 text-[#5C45FD] flex items-center justify-center group-hover:bg-[#5C45FD]/10 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                 </svg>
               </div>
               <span className="text-[13px] font-semibold text-foreground tracking-wide group-hover:text-[#5C45FD] transition-colors">MY NETWORK</span>
+            </Link>
+
+            <Link href="/ai-connect" className="flex items-center gap-4 py-4 group">
+              <div className="w-9 h-9 rounded-full bg-[#5C45FD]/10 text-[#5C45FD] flex items-center justify-center group-hover:bg-[#5C45FD]/20 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[13px] font-extrabold text-[#5C45FD] tracking-wide group-hover:text-[#4a36d9] transition-colors">AI CONTACT SEARCH</span>
+                <span className="px-1.5 py-0.5 bg-[#5C45FD] text-white text-[9px] font-bold rounded">NEW</span>
+              </div>
             </Link>
           </div>
 
