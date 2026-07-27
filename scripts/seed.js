@@ -23,11 +23,11 @@ async function main() {
   await prisma.user.create({
     data: {
       name: 'Admin',
-      email: 'admin@connex.ai',
+      email: 'admin@1reff.ai',
       password,
       role: 'ADMIN',
       title: 'Platform Administrator',
-      bio: 'Managing the Cirq AI ecosystem.',
+      bio: 'Managing the 1Reff ecosystem.',
     }
   })
 
@@ -35,7 +35,7 @@ async function main() {
   await prisma.user.create({
     data: {
       name: 'User 1',
-      email: 'user1@connex.ai',
+      email: 'user1@1reff.ai',
       password,
       role: 'USER',
       title: 'Founder & CEO at InnovateTech',
@@ -58,7 +58,7 @@ async function main() {
   await prisma.user.create({
     data: {
       name: 'User 2',
-      email: 'user2@connex.ai',
+      email: 'user2@1reff.ai',
       password,
       role: 'USER',
       title: 'Partner at Horizon Ventures',
@@ -82,7 +82,7 @@ async function main() {
   await prisma.user.create({
     data: {
       name: 'User 3',
-      email: 'user3@connex.ai',
+      email: 'user3@1reff.ai',
       password,
       role: 'USER',
       title: 'VP of Partnerships at Global Distributors',
@@ -103,16 +103,16 @@ async function main() {
   console.log('Seed completed successfully!')
   console.log('\n--- Test Accounts Created ---')
   console.log('1. Admin:')
-  console.log('   Email: admin@connex.ai')
+  console.log('   Email: admin@1reff.ai')
   console.log('   Pass:  password123')
   console.log('\n2. User 1 (Startup Founder):')
-  console.log('   Email: user1@connex.ai')
+  console.log('   Email: user1@1reff.ai')
   console.log('   Pass:  password123')
   console.log('\n3. User 2 (Investor):')
-  console.log('   Email: user2@connex.ai')
+  console.log('   Email: user2@1reff.ai')
   console.log('   Pass:  password123')
   console.log('\n4. User 3 (Distributor):')
-  console.log('   Email: user3@connex.ai')
+  console.log('   Email: user3@1reff.ai')
   console.log('   Pass:  password123')
   console.log('-----------------------------\n')
 }

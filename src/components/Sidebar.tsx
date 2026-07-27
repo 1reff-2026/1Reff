@@ -20,7 +20,7 @@ export function Sidebar() {
             </svg>
           </div>
           <div>
-            <h1 className="text-xl font-extrabold leading-none text-foreground tracking-tight">CONNEX</h1>
+            <h1 className="text-xl font-extrabold leading-none text-foreground tracking-tight">1Reff</h1>
           </div>
         </Link>
       </div>

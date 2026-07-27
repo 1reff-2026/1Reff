@@ -105,13 +105,21 @@ const mockProfiles = [
 ];
 
 async function main() {
-  const users = await prisma.user.findMany({ where: { email: 'admin@cirq.ai' } });
-  if (users.length === 0) {
-    console.log("Admin user admin@cirq.ai not found!");
-    return;
-  }
+  const users = await prisma.user.findMany({
+    where: {
+      email: { in: ['admin@1reff.ai', 'admin@cirq.ai', 'admin@connex.ai'] }
+    }
+  });
   
-  const myUser = users[0];
+  let myUser = users[0];
+  if (!myUser) {
+    const allUsers = await prisma.user.findMany();
+    if (allUsers.length === 0) {
+      console.log("No users found to seed profiles for!");
+      return;
+    }
+    myUser = allUsers[0];
+  }
   console.log("Seeding network for:", myUser.name, myUser.email);
 
   // Clear existing mock data if they have our dummy emails
@@ -268,7 +276,7 @@ async function main() {
     });
   }
 
-  console.log("Successfully seeded 10 rich profiles with connections, meetings, follow-ups, and referrals for admin@cirq.ai!");
+  console.log(`Successfully seeded 10 rich profiles with connections, meetings, follow-ups, and referrals for ${myUser.email}!`);
 }
 
 main()

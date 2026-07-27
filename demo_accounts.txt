@@ -1,19 +1,19 @@
---- CONNEX Test Accounts ---
+--- 1Reff Test Accounts ---
 
 1. Admin / Platform Manager
-   Email: admin@connex.ai
+   Email: admin@1reff.ai
    Pass:  password123
 
 2. User 1 (Startup Founder)
-   Email: user1@connex.ai
+   Email: user1@1reff.ai
    Pass:  password123
 
 3. User 2 (Investor)
-   Email: user2@connex.ai
+   Email: user2@1reff.ai
    Pass:  password123
 
 4. User 3 (Service Provider)
-   Email: user3@connex.ai
+   Email: user3@1reff.ai
    Pass:  password123
 
 -----------------------------

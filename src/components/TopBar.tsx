@@ -33,7 +33,7 @@ export async function TopBar() {
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
           </div>
-          <h1 className="text-base font-bold tracking-tight font-display text-foreground">CONNEX</h1>
+          <h1 className="text-base font-bold tracking-tight font-display text-foreground">1Reff</h1>
         </Link>
 
         {/* Right Actions */}

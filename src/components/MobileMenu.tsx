@@ -45,7 +45,7 @@ export function MobileMenu() {
                   </svg>
                 </div>
                 <div>
-                  <h1 className="text-xl font-extrabold leading-none text-foreground tracking-tight">CONNEX</h1>
+                  <h1 className="text-xl font-extrabold leading-none text-foreground tracking-tight">1Reff</h1>
                 </div>
               </Link>
               <button onClick={() => setIsOpen(false)} className="p-2 bg-gray-50 text-gray-500 rounded-full hover:bg-gray-100 transition-colors">

@@ -34,7 +34,7 @@ export default function Register() {
       <Card className="w-full max-w-md glass beam-border">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Create an Account</CardTitle>
-          <p className="text-sm text-muted-foreground mt-2">Join CONNEX to connect</p>
+          <p className="text-sm text-muted-foreground mt-2">Join 1Reff to connect</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -4,8 +4,8 @@ import { Sidebar } from "@/components/Sidebar";
 import { TopBar } from "@/components/TopBar";
 
 export const metadata: Metadata = {
-  title: "CONNEX | Intelligence Platform",
-  description: "AI Relationship Intelligence Platform",
+  title: "1Reff | Intelligence Platform",
+  description: "1Reff Relationship Intelligence Platform",
 };
 
 export default function RootLayout({

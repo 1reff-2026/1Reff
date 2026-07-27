@@ -42,7 +42,7 @@ export default function Login() {
       <Card className="w-full max-w-md glass beam-border">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Welcome Back</CardTitle>
-          <p className="text-sm text-muted-foreground mt-2">Log in to CONNEX</p>
+          <p className="text-sm text-muted-foreground mt-2">Log in to 1Reff</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

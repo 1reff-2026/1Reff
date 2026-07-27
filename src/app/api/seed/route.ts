@@ -125,7 +125,7 @@ export async function GET(req: Request) {
       myUser = users.find(u => u.email === email);
       if (!myUser) return NextResponse.json({ error: `User with email ${email} not found.` }, { status: 404 });
     } else {
-      myUser = users.find(u => u.email === "admin@cirq.ai") || users[0];
+      myUser = users.find(u => u.email === "admin@1reff.ai" || u.email === "admin@cirq.ai" || u.email === "admin@connex.ai") || users[0];
     }
 
     // Clear existing mock data
