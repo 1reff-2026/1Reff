@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { NextResponse } from "next/server"
+import bcrypt from "bcrypt"
 
 const prisma = new PrismaClient()
 
@@ -111,13 +112,35 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email");
 
+    const hashedPassword = await bcrypt.hash("password123", 10);
+
+    // Ensure Admin and Demo Accounts exist
+    const demoAccounts = [
+      { email: "admin@1reff.ai", name: "Platform Admin", title: "Head of AI Networking", role: "ADMIN", bio: "Leading AI-driven executive introductions and networking workflows." },
+      { email: "user1@1reff.ai", name: "Alex Rivera", title: "Founder @ AI Startup", role: "USER", bio: "Building generative AI tools for enterprise sales teams." },
+      { email: "user2@1reff.ai", name: "Elena Rostova", title: "Partner @ Venture Fund", role: "USER", bio: "Early stage deep tech and B2B SaaS seed investor." },
+      { email: "user3@1reff.ai", name: "Marcus Vance", title: "Director of Operations", role: "USER", bio: "Scaling supply chain and logistics across APAC and India." }
+    ];
+
+    for (const acc of demoAccounts) {
+      await prisma.user.upsert({
+        where: { email: acc.email },
+        update: {},
+        create: {
+          email: acc.email,
+          name: acc.name,
+          title: acc.title,
+          role: acc.role,
+          bio: acc.bio,
+          password: hashedPassword,
+          emailVerified: new Date()
+        }
+      });
+    }
+
     const users = await prisma.user.findMany({
       orderBy: { id: 'desc' }
     });
-    
-    if (users.length === 0) {
-      return NextResponse.json({ message: "No primary user found to attach connections to. Please register first." }, { status: 400 });
-    }
     
     // Find the primary user (the admin, or the specified email, or the latest registered user)
     let myUser;
