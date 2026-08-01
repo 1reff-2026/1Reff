@@ -1,9 +1,8 @@
 import { auth } from "@/auth"
-import { PrismaClient } from "@prisma/client"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
 
 export default async function NotificationsPage() {
   const session = await auth()

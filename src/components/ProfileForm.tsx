@@ -7,7 +7,63 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 
 const CATEGORIES = ["INVESTMENT", "MENTORSHIP", "B2B_SERVICES", "HIRING", "DISTRIBUTORS", "ADVISORY"]
 
-export function ProfileForm({ user }: { user: any }) {
+interface TagItem {
+  category: string;
+  detail: string;
+}
+
+interface TagListProps {
+  items: TagItem[];
+  setItems: (items: TagItem[]) => void;
+  title: string;
+}
+
+const TagList = ({ items, setItems, title }: TagListProps) => (
+  <div className="space-y-4">
+    <h3 className="font-semibold text-lg">{title}</h3>
+    {items.map((item: TagItem, i: number) => (
+      <div key={i} className="flex gap-2">
+        <select 
+          className="border border-input rounded-md px-3 py-2 text-sm bg-background w-40"
+          value={item.category}
+          onChange={(e) => {
+            const newItems = [...items]
+            newItems[i].category = e.target.value
+            setItems(newItems)
+          }}
+        >
+          {CATEGORIES.map(c => <option key={c} value={c}>{c.replace(/_/g, " ")}</option>)}
+        </select>
+        <input 
+          type="text" 
+          className="flex-1 border border-input rounded-md px-3 py-2 text-sm"
+          placeholder="Add details..."
+          value={item.detail}
+          onChange={(e) => {
+            const newItems = [...items]
+            newItems[i].detail = e.target.value
+            setItems(newItems)
+          }}
+        />
+        <Button type="button" variant="ghost" onClick={() => setItems(items.filter((_, index) => index !== i))}>
+          X
+        </Button>
+      </div>
+    ))}
+    <Button type="button" variant="outline" size="sm" onClick={() => setItems([...items, { category: CATEGORIES[0], detail: "" }])}>
+      + Add {title}
+    </Button>
+  </div>
+)
+
+interface UserProfile {
+  title?: string;
+  bio?: string;
+  gives?: TagItem[];
+  asks?: TagItem[];
+}
+
+export function ProfileForm({ user }: { user: UserProfile }) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   
@@ -28,44 +84,6 @@ export function ProfileForm({ user }: { user: any }) {
     setLoading(false)
     if (res?.success) setSuccess(true)
   }
-
-  const TagList = ({ items, setItems, title }: any) => (
-    <div className="space-y-4">
-      <h3 className="font-semibold text-lg">{title}</h3>
-      {items.map((item: any, i: number) => (
-        <div key={i} className="flex gap-2">
-          <select 
-            className="border border-input rounded-md px-3 py-2 text-sm bg-background w-40"
-            value={item.category}
-            onChange={(e) => {
-              const newItems = [...items]
-              newItems[i].category = e.target.value
-              setItems(newItems)
-            }}
-          >
-            {CATEGORIES.map(c => <option key={c} value={c}>{c.replace(/_/g, " ")}</option>)}
-          </select>
-          <input 
-            type="text" 
-            className="flex-1 border border-input rounded-md px-3 py-2 text-sm"
-            placeholder="Add details..."
-            value={item.detail}
-            onChange={(e) => {
-              const newItems = [...items]
-              newItems[i].detail = e.target.value
-              setItems(newItems)
-            }}
-          />
-          <Button type="button" variant="ghost" onClick={() => setItems(items.filter((_: any, index: number) => index !== i))}>
-            X
-          </Button>
-        </div>
-      ))}
-      <Button type="button" variant="outline" size="sm" onClick={() => setItems([...items, { category: CATEGORIES[0], detail: "" }])}>
-        + Add {title}
-      </Button>
-    </div>
-  )
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">

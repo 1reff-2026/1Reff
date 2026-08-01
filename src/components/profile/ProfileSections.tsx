@@ -3,7 +3,13 @@
 import { useState, useTransition } from "react"
 import { createAsk, deleteAsk, createGive, deleteGive } from "@/actions/profile"
 
-export function ProfileAsks({ asks }: { asks: any[] }) {
+interface ProfileItem {
+  id: string;
+  category: string;
+  detail: string;
+}
+
+export function ProfileAsks({ asks }: { asks: ProfileItem[] }) {
   const [isEditing, setIsEditing] = useState(false)
   const [category, setCategory] = useState("INTRODUCTION")
   const [detail, setDetail] = useState("")
@@ -96,7 +102,7 @@ export function ProfileAsks({ asks }: { asks: any[] }) {
   )
 }
 
-export function ProfileGives({ gives }: { gives: any[] }) {
+export function ProfileGives({ gives }: { gives: ProfileItem[] }) {
   const [isEditing, setIsEditing] = useState(false)
   const [category, setCategory] = useState("MENTORSHIP")
   const [detail, setDetail] = useState("")

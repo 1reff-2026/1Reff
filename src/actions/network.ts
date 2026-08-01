@@ -1,10 +1,9 @@
 "use server"
 
 import { auth } from "@/auth"
-import { PrismaClient } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
 
 export async function approveConnection(connectionId: string) {
   const session = await auth()

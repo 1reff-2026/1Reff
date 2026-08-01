@@ -1,11 +1,10 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
-import { PrismaClient } from "@prisma/client"
 import Link from "next/link"
 import { ProfileAsks, ProfileGives } from "@/components/profile/ProfileSections"
 import { ProfileBio } from "@/components/profile/ProfileBio"
 
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
 
 export default async function ProfilePage() {
   const session = await auth()

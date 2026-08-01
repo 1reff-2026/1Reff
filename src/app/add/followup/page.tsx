@@ -1,9 +1,8 @@
 import { auth } from "@/auth"
-import { PrismaClient } from "@prisma/client"
 import { redirect } from "next/navigation"
 import { FollowupClient } from "./FollowupClient"
 
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
 
 export default async function AddFollowupPage() {
   const session = await auth()

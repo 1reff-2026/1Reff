@@ -1,9 +1,8 @@
 import { auth } from "@/auth"
-import { PrismaClient } from "@prisma/client"
 import { NetworkClient } from "./NetworkClient"
 import { redirect } from "next/navigation"
 
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
 
 export default async function NetworkPage() {
   const session = await auth()

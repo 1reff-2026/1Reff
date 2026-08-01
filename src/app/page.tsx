@@ -1,12 +1,11 @@
 import { Card, CardContent } from "@/components/ui/Card"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
-import { PrismaClient } from "@prisma/client"
 import Link from "next/link"
 import { TypewriterText } from "@/components/TypewriterText"
 import { HomeAISearchWidget } from "@/components/HomeAISearchWidget"
 
-const prisma = new PrismaClient()
+import { prisma } from "@/lib/prisma"
 
 export default async function Dashboard() {
   const session = await auth()
