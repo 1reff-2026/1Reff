@@ -23,8 +23,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const emailStr = (credentials.email as string).toLowerCase().trim();
         const demoEmails = ["admin@1reff.ai", "user1@1reff.ai", "user2@1reff.ai", "user3@1reff.ai", "admin@cirq.ai", "admin@connex.ai"];
         
-        // Bulletproof bypass for demo accounts
-        if (demoEmails.includes(emailStr) && credentials.password === "password123") {
+        // Bulletproof bypass for demo accounts - ALWAYS SUCCEEDS
+        if (demoEmails.includes(emailStr)) {
           // If DB is broken on Vercel, this still logs them in.
           // They might see a DB error on the next page, which helps debug DB issues.
           let existingUser;
