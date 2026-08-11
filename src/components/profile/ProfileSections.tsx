@@ -193,3 +193,69 @@ export function ProfileGives({ gives }: { gives: ProfileItem[] }) {
     </div>
   )
 }
+
+export function ProfileUploadedContacts({ contacts }: { contacts: any[] }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="px-5 py-5 group">
+      <div 
+        className="flex items-center justify-between mb-1 cursor-pointer group-hover:opacity-80 transition-opacity"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center gap-2">
+          <h3 className="font-bold text-foreground text-[14px] uppercase tracking-wide">My Uploaded Contacts</h3>
+          <span className="text-[10px] font-bold bg-[#5C45FD] text-white px-2 py-0.5 rounded-full shadow-sm">{contacts.length}</span>
+        </div>
+        <button className="text-slate-400 hover:text-[#5C45FD] transition-colors p-1 flex items-center justify-center bg-gray-50 rounded-full w-6 h-6 border border-gray-100 group-hover:border-gray-200 group-hover:bg-gray-100">
+          {isOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      {isOpen && (
+        <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+          {contacts.length > 0 ? (
+            <div className="space-y-3 mt-4">
+              {contacts.map((contact) => (
+                <div key={contact.id} className="p-3 bg-gray-50 border border-gray-200/80 hover:border-[#5C45FD]/40 transition-colors rounded-xl flex items-start justify-between gap-3 shadow-xs relative overflow-hidden group/card cursor-pointer">
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#5C45FD] to-[#806BFF] opacity-0 group-hover/card:opacity-100 transition-opacity" />
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#5C45FD] to-purple-500 text-white flex items-center justify-center shrink-0 text-xs font-bold shadow-sm shadow-[#5C45FD]/20">
+                      {contact.contact_name.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-sm text-gray-800 truncate">{contact.contact_name}</p>
+                      <p className="text-[11px] text-gray-500 truncate mt-0.5">{contact.designation} <span className="text-gray-300 mx-1">•</span> <span className="font-medium text-gray-600">{contact.company}</span></p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1 shrink-0 pt-1">
+                    <span className="text-[10px] text-gray-500 font-semibold bg-white border border-gray-200 px-1.5 py-0.5 rounded flex items-center gap-1 shadow-xs">
+                      <svg className="w-2.5 h-2.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                      {contact.location}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-4 p-4 rounded-xl border border-dashed border-gray-300 bg-gray-50/50 flex flex-col items-center justify-center text-center">
+              <div className="w-8 h-8 rounded-full bg-gray-200/50 flex items-center justify-center mb-2">
+                <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+              </div>
+              <p className="text-xs text-gray-500 font-medium">No contacts uploaded yet.</p>
+              <p className="text-[10px] text-gray-400 mt-1">Contribute to the 1Reff library to see them here.</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}

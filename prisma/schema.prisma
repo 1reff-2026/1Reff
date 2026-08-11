@@ -49,6 +49,7 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
+  uploadedContacts Contact[] @relation("UserUploads")
 }
 
 model Company {
@@ -178,4 +179,25 @@ model Referral {
   receiver    User     @relation("ReferralReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
   referred    User     @relation("ReferredUser", fields: [referredId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
+}
+
+model Contact {
+  id           String   @id @default(cuid())
+  contact_name String
+  email        String
+  phone        String
+  company      String
+  designation  String
+  department   String
+  role         String
+  location     String
+  linkedin     String
+  notes        String
+  matchScore   Int?
+  
+  uploadedById String?
+  uploadedBy   User?    @relation("UserUploads", fields: [uploadedById], references: [id])
+  
+  embedding    Unsupported("vector(1536)")?
+  createdAt    DateTime @default(now())
 }

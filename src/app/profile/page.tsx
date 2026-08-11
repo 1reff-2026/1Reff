@@ -1,7 +1,7 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { ProfileAsks, ProfileGives } from "@/components/profile/ProfileSections"
+import { ProfileAsks, ProfileGives, ProfileUploadedContacts } from "@/components/profile/ProfileSections"
 import { ProfileBio } from "@/components/profile/ProfileBio"
 
 import { prisma } from "@/lib/prisma"
@@ -15,7 +15,7 @@ export default async function ProfilePage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    include: { gives: true, asks: true }
+    include: { gives: true, asks: true, uploadedContacts: true }
   })
 
   if (!user) {
@@ -142,6 +142,10 @@ export default async function ProfilePage() {
               </svg>
             </button>
           </div>
+          <div className="mx-5 border-t border-gray-100" />
+
+          {/* Uploaded Contacts Dashboard */}
+          <ProfileUploadedContacts contacts={user.uploadedContacts || []} />
 
         </div>
       </div>

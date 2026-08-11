@@ -3,8 +3,6 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { TypewriterText } from "@/components/TypewriterText"
-import { HomeAISearchWidget } from "@/components/HomeAISearchWidget"
-
 import { prisma } from "@/lib/prisma"
 
 export default async function Dashboard() {
@@ -92,9 +90,6 @@ export default async function Dashboard() {
               </div>
             </div>
           </Link>
-
-          {/* 3rd: AI Contact Search Widget */}
-          <HomeAISearchWidget />
         </div>
 
         {/* Banner */}
