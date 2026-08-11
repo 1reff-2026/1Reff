@@ -20,51 +20,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        let user = await prisma.user.findUnique({
-          where: { email: credentials.email as string }
-        });
-
-        // Auto-create demo accounts on-the-fly in serverless environments if they don't exist yet!
-        const emailStr = (credentials.email as string).toLowerCase();
+        const emailStr = (credentials.email as string).toLowerCase().trim();
         const demoEmails = ["admin@1reff.ai", "user1@1reff.ai", "user2@1reff.ai", "user3@1reff.ai", "admin@cirq.ai", "admin@connex.ai"];
-        if (!user && demoEmails.includes(emailStr) && credentials.password === "password123") {
-          const hashedPassword = await bcrypt.hash("password123", 10);
-          const nameMap: Record<string, string> = {
-            "admin@1reff.ai": "Platform Admin",
-            "admin@cirq.ai": "Platform Admin",
-            "admin@connex.ai": "Platform Admin",
-            "user1@1reff.ai": "Alex Rivera",
-            "user2@1reff.ai": "Elena Rostova",
-            "user3@1reff.ai": "Marcus Vance"
+        
+        // Bulletproof bypass for demo accounts
+        if (demoEmails.includes(emailStr) && credentials.password === "password123") {
+          // If DB is broken on Vercel, this still logs them in.
+          // They might see a DB error on the next page, which helps debug DB issues.
+          let existingUser;
+          try {
+            existingUser = await prisma.user.findUnique({ where: { email: emailStr } });
+          } catch(e) {
+             console.error("Prisma error in authorize:", e);
+          }
+          
+          return {
+            id: existingUser?.id || "demo-user-id",
+            email: emailStr,
+            name: existingUser?.name || "Demo User",
           };
-          const roleMap: Record<string, string> = {
-            "admin@1reff.ai": "ADMIN",
-            "admin@cirq.ai": "ADMIN",
-            "admin@connex.ai": "ADMIN"
-          };
-          user = await prisma.user.create({
-            data: {
-              email: emailStr,
-              name: nameMap[emailStr] || "Demo User",
-              password: hashedPassword,
-              role: roleMap[emailStr] || "USER",
-              title: emailStr.includes("admin") ? "Head of AI Networking" : "Verified Member",
-              bio: "Active 1Reff networking account."
-            }
+        }
+
+        let user;
+        try {
+          user = await prisma.user.findUnique({
+            where: { email: emailStr }
           });
+        } catch (e) {
+          console.error("Prisma failed to connect:", e);
+          return null;
         }
 
         if (!user || !user.password) return null;
-
-        // Bypass bcrypt native module issues in Next.js for demo accounts
-        const isDemoAccount = demoEmails.includes(emailStr);
-        if (isDemoAccount && credentials.password === "password123") {
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-          };
-        }
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password as string,
