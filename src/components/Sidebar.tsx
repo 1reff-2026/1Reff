@@ -92,7 +92,7 @@ export function Sidebar() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <span className="text-[13px] font-semibold text-foreground tracking-wide group-hover:text-[#5C45FD] transition-colors">REFERRALS RECEIVED</span>
+              <span className="text-[13px] font-semibold text-foreground tracking-wide group-hover:text-[#5C45FD] transition-colors">REFERRALS PURCHASED</span>
             </Link>
 
             <Link href="/referrals-passed" className="flex items-center gap-4 py-4 border-b border-gray-100 group">
@@ -114,63 +114,16 @@ export function Sidebar() {
             </Link>
 
             <Link href="/ai-connect" className="flex items-center gap-4 py-4 group">
-              <div className="w-9 h-9 rounded-full bg-[#5C45FD]/10 text-[#5C45FD] flex items-center justify-center group-hover:bg-[#5C45FD]/20 transition-colors">
+              <div className="w-9 h-9 rounded-full bg-[#5C45FD]/5 text-[#5C45FD] flex items-center justify-center group-hover:bg-[#5C45FD]/10 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[13px] font-extrabold text-[#5C45FD] tracking-wide group-hover:text-[#4a36d9] transition-colors">AI CONTACT SEARCH</span>
-                <span className="px-1.5 py-0.5 bg-[#5C45FD] text-white text-[9px] font-bold rounded">NEW</span>
-              </div>
+              <span className="text-[13px] font-semibold text-foreground tracking-wide group-hover:text-[#5C45FD] transition-colors">AI SEARCH</span>
             </Link>
           </div>
 
-          {/* Add NEW Section */}
-          <div className="px-4 mt-6 mb-4">
-            <button
-              onClick={() => setIsAddNewOpen(!isAddNewOpen)}
-              className="w-full flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 transition-colors group"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white shadow-sm text-gray-700 flex items-center justify-center border border-gray-100">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                </div>
-                <span className="text-[14px] font-bold text-foreground">Add NEW</span>
-              </div>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isAddNewOpen ? 'rotate-180' : ''}`}
-                fill="none" viewBox="0 0 24 24" stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
 
-            {/* Dropdown Items */}
-            {isAddNewOpen && (
-              <div className="mt-2 pl-4 border-l-2 border-gray-100 ml-4 space-y-1 animate-in slide-in-from-top-2 fade-in duration-200">
-                <Link href="/add/meeting" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-primary transition-colors">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-                  <span className="text-[13px] font-medium">Meeting</span>
-                </Link>
-                <Link href="/add/followup" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-primary transition-colors">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/40" />
-                  <span className="text-[13px] font-medium">Followup</span>
-                </Link>
-                <Link href="/add/ask" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-primary transition-colors">
-                  <span className="w-1.5 h-1.5 rounded-full bg-orange-400/40" />
-                  <span className="text-[13px] font-medium">Ask</span>
-                </Link>
-                <Link href="/add/give" className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50 text-gray-600 hover:text-primary transition-colors">
-                  <span className="w-1.5 h-1.5 rounded-full bg-purple-500/40" />
-                  <span className="text-[13px] font-medium">Give</span>
-                </Link>
-              </div>
-            )}
-          </div>
           
           <div className="mt-auto px-4 pb-4">
             <button 

@@ -1,55 +1,45 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  phone         String?
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  bio           String?
-  title         String?
-  role          String    @default("USER")
-  
-  // Relations
-  companyId     String?
-  company       Company?  @relation(fields: [companyId], references: [id])
-  
-  gives         Give[]
-  asks          Ask[]
-  opportunities Opportunity[]
-  
-  connectionsA  Connection[] @relation("UserA")
-  connectionsB  Connection[] @relation("UserB")
-  
-  messagesSent     Message[] @relation("MessageSender")
-  messagesReceived Message[] @relation("MessageReceiver")
-
-  meetingsHosted   Meeting[] @relation("MeetingHost")
-  meetingsGuest    Meeting[] @relation("MeetingGuest")
-
-  followupsMade    Followup[] @relation("FollowupOwner")
-  followupsTarget  Followup[] @relation("FollowupTarget")
-
-  referralsMade    Referral[] @relation("ReferralMaker")
-  referralsReceived Referral[] @relation("ReferralReceiver")
-  referredIn       Referral[] @relation("ReferredUser")
-
-  accounts      Account[]
-  sessions      Session[]
-  uploadedContacts Contact[] @relation("UserUploads")
+  id                String            @id @default(cuid())
+  name              String?
+  email             String?           @unique
+  phone             String?
+  emailVerified     DateTime?
+  image             String?
+  password          String?
+  bio               String?
+  title             String?
+  role              String            @default("USER")
+  companyId         String?
+  aiChatSessions    AIChatSession[]   @relation("UserAIChats")
+  accounts          Account[]
+  asks              Ask[]
+  connectionsA      Connection[]      @relation("UserA")
+  connectionsB      Connection[]      @relation("UserB")
+  uploadedContacts  Contact[]         @relation("UserUploads")
+  followupsTarget   Followup[]        @relation("FollowupTarget")
+  followupsMade     Followup[]        @relation("FollowupOwner")
+  gives             Give[]
+  meetingsGuest     Meeting[]         @relation("MeetingGuest")
+  meetingsHosted    Meeting[]         @relation("MeetingHost")
+  messagesReceived  Message[]         @relation("MessageReceiver")
+  messagesSent      Message[]         @relation("MessageSender")
+  opportunities     Opportunity[]
+  referralsReceived Referral[]        @relation("ReferralReceiver")
+  referredIn        Referral[]        @relation("ReferredUser")
+  referralsMade     Referral[]        @relation("ReferralMaker")
+  sessions          Session[]
+  unlockedContacts  UnlockedContact[] @relation("UserUnlocks")
+  company           Company?          @relation(fields: [companyId], references: [id])
 }
 
 model Company {
@@ -62,7 +52,7 @@ model Company {
 
 model Give {
   id       String @id @default(cuid())
-  category String // e.g. "INVESTMENT", "MENTORSHIP", "B2B_SERVICES"
+  category String
   detail   String
   userId   String
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -70,7 +60,7 @@ model Give {
 
 model Ask {
   id       String @id @default(cuid())
-  category String // e.g. "INVESTMENT", "HIRING", "DISTRIBUTORS"
+  category String
   detail   String
   userId   String
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -81,19 +71,19 @@ model Opportunity {
   title       String
   description String
   authorId    String
-  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }
 
 model Connection {
   id         String   @id @default(cuid())
   userAId    String
   userBId    String
+  status     String
+  matchScore Float?
+  createdAt  DateTime @default(now())
   userA      User     @relation("UserA", fields: [userAId], references: [id], onDelete: Cascade)
   userB      User     @relation("UserB", fields: [userBId], references: [id], onDelete: Cascade)
-  status     String   // "PENDING", "ACCEPTED", "REJECTED"
-  matchScore Float?   // AI match score %
-  createdAt  DateTime @default(now())
 
   @@unique([userAId, userBId])
 }
@@ -102,28 +92,26 @@ model Message {
   id         String   @id @default(cuid())
   senderId   String
   receiverId String
-  sender     User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver   User     @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
   content    String
   createdAt  DateTime @default(now())
+  receiver   User     @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender     User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
 }
 
-// NextAuth Required Models
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  
-  access_token       String?  
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -145,44 +133,44 @@ model VerificationToken {
 }
 
 model Meeting {
-  id          String   @id @default(cuid())
-  date        DateTime
-  notes       String?
-  status      String   @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
-  hostId      String
-  guestId     String
-  host        User     @relation("MeetingHost", fields: [hostId], references: [id], onDelete: Cascade)
-  guest       User     @relation("MeetingGuest", fields: [guestId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  date      DateTime
+  notes     String?
+  status    String   @default("SCHEDULED")
+  hostId    String
+  guestId   String
+  createdAt DateTime @default(now())
+  guest     User     @relation("MeetingGuest", fields: [guestId], references: [id], onDelete: Cascade)
+  host      User     @relation("MeetingHost", fields: [hostId], references: [id], onDelete: Cascade)
 }
 
 model Followup {
-  id          String   @id @default(cuid())
-  date        DateTime
-  notes       String
-  status      String   @default("PENDING") // PENDING, COMPLETED
-  userId      String
-  targetId    String
-  user        User     @relation("FollowupOwner", fields: [userId], references: [id], onDelete: Cascade)
-  target      User     @relation("FollowupTarget", fields: [targetId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  date      DateTime
+  notes     String
+  status    String   @default("PENDING")
+  userId    String
+  targetId  String
+  createdAt DateTime @default(now())
+  target    User     @relation("FollowupTarget", fields: [targetId], references: [id], onDelete: Cascade)
+  user      User     @relation("FollowupOwner", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Referral {
-  id          String   @id @default(cuid())
-  notes       String
-  status      String   @default("PENDING") // PENDING, SUCCESSFUL, FAILED
-  referrerId  String
-  receiverId  String
-  referredId  String
-  referrer    User     @relation("ReferralMaker", fields: [referrerId], references: [id], onDelete: Cascade)
-  receiver    User     @relation("ReferralReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
-  referred    User     @relation("ReferredUser", fields: [referredId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  notes      String
+  status     String   @default("PENDING")
+  referrerId String
+  receiverId String
+  referredId String
+  createdAt  DateTime @default(now())
+  receiver   User     @relation("ReferralReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  referred   User     @relation("ReferredUser", fields: [referredId], references: [id], onDelete: Cascade)
+  referrer   User     @relation("ReferralMaker", fields: [referrerId], references: [id], onDelete: Cascade)
 }
 
 model Contact {
-  id           String   @id @default(cuid())
+  id           String                 @id @default(cuid())
   contact_name String
   email        String
   phone        String
@@ -194,10 +182,38 @@ model Contact {
   linkedin     String
   notes        String
   matchScore   Int?
-  
   uploadedById String?
-  uploadedBy   User?    @relation("UserUploads", fields: [uploadedById], references: [id])
-  
-  embedding    Unsupported("vector(1536)")?
-  createdAt    DateTime @default(now())
+  embedding    Unsupported("vector")?
+  createdAt    DateTime               @default(now())
+  uploadedBy   User?                  @relation("UserUploads", fields: [uploadedById], references: [id])
+}
+
+model UnlockedContact {
+  id             String   @id @default(cuid())
+  userId         String
+  contactId      String?
+  platformUserId String?
+  amount         Int
+  createdAt      DateTime @default(now())
+  user           User     @relation("UserUnlocks", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AIChatSession {
+  id        String          @id @default(cuid())
+  userId    String
+  title     String          @default("New Chat")
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  messages  AIChatMessage[]
+  user      User            @relation("UserAIChats", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AIChatMessage {
+  id        String        @id @default(cuid())
+  sessionId String
+  role      String
+  content   String
+  results   Json?
+  createdAt DateTime      @default(now())
+  session   AIChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }

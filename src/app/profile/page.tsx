@@ -1,7 +1,7 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { ProfileAsks, ProfileGives, ProfileUploadedContacts } from "@/components/profile/ProfileSections"
+import { ProfileAsks, ProfileUploadedContacts } from "@/components/profile/ProfileSections"
 import { ProfileBio } from "@/components/profile/ProfileBio"
 
 import { prisma } from "@/lib/prisma"
@@ -87,10 +87,8 @@ export default async function ProfilePage() {
           <ProfileBio bio={user.bio} title={user.title} />
           <div className="mx-5 border-t border-gray-100" />
 
-          {/* Asks & Gives */}
+          {/* Asks */}
           <ProfileAsks asks={user.asks} />
-          <div className="mx-5 border-t border-gray-100" />
-          <ProfileGives gives={user.gives} />
           <div className="mx-5 border-t border-gray-100" />
 
           {/* Services */}

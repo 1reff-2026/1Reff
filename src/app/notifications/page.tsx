@@ -41,6 +41,24 @@ export default async function NotificationsPage() {
     orderBy: { date: 'asc' }
   })
 
+  // 5. Unlocked Contacts (People who paid for contacts you uploaded)
+  const myUploadedContacts = await prisma.contact.findMany({
+    where: { uploadedById: myId },
+    select: { id: true, contact_name: true }
+  })
+  const myUploadedContactIds = myUploadedContacts.map(c => c.id)
+  
+  const myUnlockedContacts = await prisma.unlockedContact.findMany({
+    where: { contactId: { in: myUploadedContactIds } },
+    include: { user: true },
+    orderBy: { createdAt: 'desc' }
+  })
+  
+  const unlockedNotifications = myUnlockedContacts.map(u => ({
+    ...u,
+    contactName: myUploadedContacts.find(c => c.id === u.contactId)?.contact_name || 'a contact'
+  }))
+
   return (
     <div className="w-full max-w-2xl md:max-w-4xl mx-auto appear pb-24">
       <div className="flex items-center gap-3 mb-8 px-4 md:px-0">
@@ -148,11 +166,11 @@ export default async function NotificationsPage() {
                   <div>
                     <p className="font-medium text-gray-900">Follow up with {follow.target.name}</p>
                     <p className="text-sm text-gray-500">
-                      Due: {new Date(follow.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {new Date(follow.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {follow.notes}
                     </p>
                   </div>
-                  <Link href={`/follows`} className="px-4 py-2 bg-amber-100 text-amber-700 hover:bg-amber-200 text-sm font-medium rounded-xl transition-colors whitespace-nowrap">
-                    Action
+                  <Link href={`/network`} className="px-4 py-2 bg-amber-100 text-amber-700 hover:bg-amber-200 text-sm font-medium rounded-xl transition-colors whitespace-nowrap">
+                    View
                   </Link>
                 </div>
               ))}
@@ -160,7 +178,36 @@ export default async function NotificationsPage() {
           </div>
         )}
 
-        {pendingConnections.length === 0 && pendingReferrals.length === 0 && upcomingMeetings.length === 0 && pendingFollowups.length === 0 && (
+        {/* Contact Unlocks Section */}
+        {unlockedNotifications.length > 0 && (
+          <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#5C45FD]"></span>
+              Contacts Unlocked
+            </h2>
+            <div className="flex flex-col gap-4">
+              {unlockedNotifications.map((unlock: any) => (
+                <div key={unlock.id} className="flex items-center justify-between p-4 bg-[#5C45FD]/5 rounded-2xl border border-[#5C45FD]/10">
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      <span className="font-bold text-[#5C45FD]">{unlock.user.name || 'A member'}</span> paid to unlock your contact <span className="font-bold text-gray-900">{unlock.contactName}</span>!
+                    </p>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      {new Date(unlock.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })} • You earned ₹{unlock.amount}
+                    </p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-[#5C45FD]/10 flex items-center justify-center text-[#5C45FD]">
+                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {pendingConnections.length === 0 && pendingReferrals.length === 0 && upcomingMeetings.length === 0 && pendingFollowups.length === 0 && unlockedNotifications.length === 0 && (
           <div className="bg-white rounded-3xl border border-gray-100 p-12 text-center shadow-sm">
             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

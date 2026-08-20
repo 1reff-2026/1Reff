@@ -2,9 +2,44 @@ import * as React from 'react'
 import { auth } from "@/auth"
 import { MobileMenu } from "./MobileMenu"
 import Link from "next/link"
+import { prisma } from "@/lib/prisma"
 
 export async function TopBar() {
   const session = await auth()
+  let hasNotifications = false;
+  
+  if (session?.user?.id) {
+    const myId = session.user.id;
+    
+    // Check connections
+    const pendingConnections = await prisma.connection.count({
+      where: { userBId: myId, status: "PENDING" }
+    });
+    
+    // Check referrals
+    const pendingReferrals = await prisma.referral.count({
+      where: { receiverId: myId, status: "PENDING" }
+    });
+    
+    // Check followups
+    const pendingFollowups = await prisma.followup.count({
+      where: { userId: myId, status: "PENDING" }
+    });
+    
+    // Check unlocked contacts
+    const myUploadedContacts = await prisma.contact.findMany({
+      where: { uploadedById: myId },
+      select: { id: true }
+    });
+    const myUploadedContactIds = myUploadedContacts.map(c => c.id);
+    const unlockedCount = await prisma.unlockedContact.count({
+      where: { contactId: { in: myUploadedContactIds } }
+    });
+    
+    if (pendingConnections > 0 || pendingReferrals > 0 || pendingFollowups > 0 || unlockedCount > 0) {
+      hasNotifications = true;
+    }
+  }
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-hairline shadow-sm md:hidden">
@@ -37,7 +72,9 @@ export async function TopBar() {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
-            <span className="absolute top-2 right-2.5 block h-2 w-2 rounded-full bg-destructive ring-2 ring-white" />
+            {hasNotifications && (
+              <span className="absolute top-2 right-2.5 block h-2 w-2 rounded-full bg-destructive ring-2 ring-white" />
+            )}
           </Link>
         </div>
       </div>
