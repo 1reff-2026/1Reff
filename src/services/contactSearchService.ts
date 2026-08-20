@@ -189,7 +189,7 @@ Output MUST be in JSON format exactly like this:
   ]
 }`;
           const synthCompletion = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
+            model: "gpt-4o",
             response_format: { type: "json_object" },
             messages: [{ role: "system", content: synthPrompt }],
             temperature: 0.7,
@@ -264,7 +264,7 @@ ${JSON.stringify(initialResults.map(r => ({
 })), null, 2)}`;
 
           const completion = await openai.chat.completions.create({
-            model: "gpt-4o-mini",
+            model: "gpt-4o",
             response_format: { type: "json_object" },
             messages: [
               { role: "system", content: systemPrompt },

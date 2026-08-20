@@ -98,7 +98,7 @@ If the user is asking a follow-up question to filter, pick, or suggest contacts 
 
     // Call OpenAI
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", 
+      model: "gpt-4o", 
       messages: openAiMessages,
       tools: [
         {
@@ -173,7 +173,7 @@ If the user is asking a follow-up question to filter, pick, or suggest contacts 
         });
 
         const secondResponse = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
+          model: "gpt-4o",
           messages: openAiMessages,
         });
 
@@ -211,7 +211,7 @@ If the user is asking a follow-up question to filter, pick, or suggest contacts 
         });
 
         const secondResponse = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
+          model: "gpt-4o",
           messages: openAiMessages,
         });
 
