@@ -121,7 +121,7 @@ export class SemanticContactSearchService implements IContactSearchService {
       let initialResults: SearchResult[] = [
         // Map Contact results
         ...dbResults
-          .filter(r => r.vector_score > 0.00)
+          .filter(r => r.vector_score > 0.45)
           .map(r => ({
             id: r.id,
             contact_name: r.contact_name,
@@ -161,79 +161,21 @@ export class SemanticContactSearchService implements IContactSearchService {
             isUnlocked: unlockedPlatformUserIds.has(r.id)
           }))
       ];
-      // Cap real results at top 5
-      initialResults = initialResults.slice(0, 5);
-
-      // Fill missing results up to 5 using GPT synthetic generation
-      if (initialResults.length < 5) {
-        const missingCount = 5 - initialResults.length;
-        try {
-          const synthPrompt = `You are an AI generating realistic professional contacts for a networking platform's simulated database.
-The user is searching for: "${query}"
-Generate exactly ${missingCount} highly relevant, realistic professional contact(s) that match this query.
-Output MUST be in JSON format exactly like this:
-{
-  "contacts": [
-    {
-      "contact_name": "Full Name",
-      "email": "first.last@company.com",
-      "phone": "+1 555-0100",
-      "company": "Company Name",
-      "designation": "Job Title",
-      "department": "Department",
-      "role": "Role",
-      "location": "City, Country",
-      "linkedin": "https://linkedin.com/in/username",
-      "notes": "A brief realistic bio or note about this person's expertise."
-    }
-  ]
-}`;
-          const synthCompletion = await openai.chat.completions.create({
-            model: "gpt-4o",
-            response_format: { type: "json_object" },
-            messages: [{ role: "system", content: synthPrompt }],
-            temperature: 0.7,
-          });
-
-          const synthContent = synthCompletion.choices[0].message.content;
-          if (synthContent) {
-            const parsed = JSON.parse(synthContent);
-            const generatedContacts = parsed.contacts || [];
-            for (let i = 0; i < generatedContacts.length; i++) {
-              if (initialResults.length >= 5) break; // Safety check
-              const c = generatedContacts[i];
-              initialResults.push({
-                id: `synth_${Date.now()}_${i}`,
-                contact_name: c.contact_name || "Generated Professional",
-                email: c.email || "",
-                phone: c.phone || "",
-                company: c.company || "",
-                designation: c.designation || "",
-                department: c.department || "",
-                role: c.role || "",
-                location: c.location || "",
-                linkedin: c.linkedin || "",
-                notes: c.notes || "",
-                uploadedById: null,
-                uploader_name: null,
-                matchScore: 85,
-                resultType: "ADMIN_DATABASE" as ResultType,
-                isUnlocked: false
-              });
-            }
-          }
-        } catch (synthError) {
-          console.error("Error generating synthetic contacts:", synthError);
-        }
-      }
+      // Cap real results at top 10 to give the strict LLM filter a good pool
+      initialResults = initialResults.slice(0, 10);
 
       // 5. "Thinking Search" LLM Re-ranking Phase
       if (userProfile && (userProfile.bio || userProfile.company?.name || userProfile.role) && initialResults.length > 0) {
         try {
           const systemPrompt = `You are an elite AI networking matchmaker. 
-Your goal is to evaluate the provided list of candidates against the searching user's profile and query.
-Select ALL the provided candidates.
-For EACH candidate, provide a highly precise and exact analysis in exactly this format (use exactly these 2 sections, separated by double newlines, keeping the text very concise):
+Your goal is to evaluate the provided list of candidates against the user's query and profile.
+RULES for matching:
+1. LOCATION MUST BE STRICT: If the user's query specifies a LOCATION (e.g. 'Delhi', 'Mumbai'), you MUST completely REJECT candidates who are located in a different city or state.
+2. ROLES CAN BE FLEXIBLE WITHIN THE SAME DOMAIN: If the user searches for a specific role (e.g. 'Marketing Head'), you SHOULD INCLUDE other people in the same department or related roles (e.g. 'Marketing Manager', 'CMO').
+3. DO NOT CROSS DOMAINS: You MUST REJECT candidates who are in completely different professions. For example, if the user searches for a 'Tech employee' or 'Software Engineer', DO NOT return an 'Architect' or 'Legal Advisor' even if they happen to work at a Technology company. The actual ROLE/PROFESSION must align.
+4. Select ONLY the highly accurate candidates based on these rules. It is completely expected to return 0 candidates if no one matches the criteria.
+
+For EACH selected candidate, provide a highly precise and exact analysis in exactly this format (use exactly these 2 sections, separated by double newlines, keeping the text very concise):
 **Why suggested:** [1 sentence specific reason]
 
 **Worth verifying:** [1 sentence on what to verify or look out for]
@@ -259,6 +201,7 @@ ${JSON.stringify(initialResults.map(r => ({
   company: r.company,
   designation: r.designation,
   role: r.role,
+  location: r.location,
   resultType: r.resultType,
   bio_or_notes: r.notes
 })), null, 2)}`;
@@ -289,22 +232,22 @@ ${JSON.stringify(initialResults.map(r => ({
                 });
               }
             }
+
+            finalResults.sort((a, b) => {
+              const scoreA = typeof a.aiFitScore === 'number' ? a.aiFitScore : 0;
+              const scoreB = typeof b.aiFitScore === 'number' ? b.aiFitScore : 0;
+              return scoreB - scoreA;
+            });
             
-            if (finalResults.length > 0) {
-              finalResults.sort((a, b) => {
-                const scoreA = typeof a.aiFitScore === 'number' ? a.aiFitScore : 0;
-                const scoreB = typeof b.aiFitScore === 'number' ? b.aiFitScore : 0;
-                return scoreB - scoreA;
-              });
-              return finalResults;
-            }
+            // Return exactly what the LLM selected, even if it's 0 results!
+            return finalResults;
           }
         } catch (llmError) {
           console.error("Error during LLM Thinking Search re-ranking:", llmError);
         }
       }
 
-      // Fallback: return top 5
+      // Fallback: only if LLM completely crashed or userProfile is missing
       return initialResults.slice(0, 5);
 
     } catch (error) {
