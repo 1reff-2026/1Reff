@@ -81,7 +81,7 @@ export class SemanticContactSearchService implements IContactSearchService {
         FROM "Contact" c
         LEFT JOIN "User" u ON c."uploadedById" = u.id
         ORDER BY hybrid_score DESC
-        LIMIT 15;
+        LIMIT 100;
         `,
         embeddingStr,
         query.trim()
@@ -121,7 +121,6 @@ export class SemanticContactSearchService implements IContactSearchService {
       let initialResults: SearchResult[] = [
         // Map Contact results
         ...dbResults
-          .filter(r => r.vector_score > 0.45)
           .map(r => ({
             id: r.id,
             contact_name: r.contact_name,
@@ -161,8 +160,8 @@ export class SemanticContactSearchService implements IContactSearchService {
             isUnlocked: unlockedPlatformUserIds.has(r.id)
           }))
       ];
-      // Cap real results at top 10 to give the strict LLM filter a good pool
-      initialResults = initialResults.slice(0, 10);
+      // Pass up to 100 top matches to the powerful GPT-4o model for deep semantic filtering
+      initialResults = initialResults.slice(0, 100);
 
       // 5. "Thinking Search" LLM Re-ranking Phase
       if (userProfile && (userProfile.bio || userProfile.company?.name || userProfile.role) && initialResults.length > 0) {
@@ -170,13 +169,23 @@ export class SemanticContactSearchService implements IContactSearchService {
           const systemPrompt = `You are an elite AI networking matchmaker. 
 Your goal is to evaluate the provided list of candidates against the user's query and profile.
 RULES for matching:
-1. LOCATION MUST BE STRICT: If the user's query specifies a LOCATION (e.g. 'Delhi', 'Mumbai'), you MUST completely REJECT candidates who are located in a different city or state.
-2. ROLES CAN BE FLEXIBLE WITHIN THE SAME DOMAIN: If the user searches for a specific role (e.g. 'Marketing Head'), you SHOULD INCLUDE other people in the same department or related roles (e.g. 'Marketing Manager', 'CMO').
-3. DO NOT CROSS DOMAINS: You MUST REJECT candidates who are in completely different professions. For example, if the user searches for a 'Tech employee' or 'Software Engineer', DO NOT return an 'Architect' or 'Legal Advisor' even if they happen to work at a Technology company. The actual ROLE/PROFESSION must align.
-4. Select ONLY the highly accurate candidates based on these rules. It is completely expected to return 0 candidates if no one matches the criteria.
+1. LOCATION MUST BE STRICT: If the user's query specifies a LOCATION (e.g. 'Delhi', 'Mumbai', 'Gujarat'), you MUST completely REJECT candidates who are located in a completely different geographical region. However, if they search for a State (e.g. Gujarat), you MUST INCLUDE cities within that state (e.g. Ahmedabad, Surat).
+2. ROLES MUST BE FLEXIBLE WITHIN THE SAME DOMAIN: 
+   If the user searches for a specific role (e.g. 'Marketing Head' or 'Law Associate'), you MUST INCLUDE other people in the same department (e.g. 'Marketing Manager', 'Managing Partner', 'Legal Advisor').
+   Do not reject someone because of a seniority mismatch (e.g. Associate vs Partner) or slight title mismatch, as long as they are in the requested field/department.
+
+3. STRICT DOMAIN FILTER: 
+   You MUST REJECT candidates who are in completely different professions. For example, if the user searches for a 'Tech employee', DO NOT return a 'Legal Advisor' even if they happen to work at a Tech company. The profession must align.
+4. PRIVACY LOCK - CRITICAL RULE:
+   You MUST NEVER mention the candidate's actual name, company name, or exact specific identifying details in your reasoning.
+   Use generic terms instead: "This candidate", "Their firm", "This professional", "Their clinic".
+   Example BAD: "Mr. Kushal Kothari is a Managing Partner at LEAGLEZ in Ahmedabad."
+   Example GOOD: "This candidate is a Managing Partner at a legal firm in Ahmedabad."
+
+5. Select ONLY the highly accurate candidates based on these rules. You MUST select a MAXIMUM of 5 top candidates. It is completely expected to return 0 candidates if no one matches the criteria.
 
 For EACH selected candidate, provide a highly precise and exact analysis in exactly this format (use exactly these 2 sections, separated by double newlines, keeping the text very concise):
-**Why suggested:** [1 sentence specific reason]
+**Why suggested:** [1 sentence specific reason using privacy-safe language]
 
 **Worth verifying:** [1 sentence on what to verify or look out for]
 
@@ -197,9 +206,10 @@ Search Query: "${query}"
 Candidates:
 ${JSON.stringify(initialResults.map(r => ({
   id: r.id,
-  name: r.contact_name,
-  company: r.company,
+  name: "Premium Contact",
+  company: "Premium Company",
   designation: r.designation,
+  department: r.department,
   role: r.role,
   location: r.location,
   resultType: r.resultType,
@@ -239,8 +249,8 @@ ${JSON.stringify(initialResults.map(r => ({
               return scoreB - scoreA;
             });
             
-            // Return exactly what the LLM selected, even if it's 0 results!
-            return finalResults;
+            // Return exactly what the LLM selected (capped at max 5 results)
+            return finalResults.slice(0, 5);
           }
         } catch (llmError) {
           console.error("Error during LLM Thinking Search re-ranking:", llmError);

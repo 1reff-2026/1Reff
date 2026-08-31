@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation"
 import { Sidebar } from "@/components/Sidebar"
 import { TopBar } from "@/components/TopBar"
 
+import MascotRobot from "@/components/MascotRobot"
+
 export function ClientLayoutWrapper({ 
   children,
   sidebar,
@@ -39,6 +41,12 @@ export function ClientLayoutWrapper({
         <main className="flex-1 p-0 md:p-8 relative z-10">
           {children}
         </main>
+        
+        {/* Temporarily disabled Mascot
+        <div className="fixed bottom-0 right-0 z-50 pointer-events-auto">
+          <MascotRobot size={150} />
+        </div>
+        */}
       </div>
     </div>
   )

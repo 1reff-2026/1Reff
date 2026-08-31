@@ -67,7 +67,15 @@ function ContactCard({ contact, index, msgId, handleCopy }: { contact: SearchRes
           </div>
           <div>
             <h4 className="text-base font-bold text-gray-900 tracking-tight">
-              {isUnlocked ? contact.contact_name : contact.contact_name.split(" ")[0]}
+              {isUnlocked ? contact.contact_name : (() => {
+                const parts = contact.contact_name.split(" ").filter(Boolean);
+                const salutations = ["mr", "mr.", "ms", "ms.", "mrs", "mrs.", "dr", "dr.", "ca", "ca.", "prof", "prof.", "adv", "adv.", "cpa"];
+                let firstReal = parts[0] || "Hidden";
+                if (salutations.includes(firstReal.toLowerCase()) && parts.length > 1) {
+                  firstReal = parts[1];
+                }
+                return firstReal.charAt(0).toUpperCase() + firstReal.slice(1).toLowerCase();
+              })()}
             </h4>
             <p className="text-xs font-semibold text-gray-500">
               {contact.designation} {isUnlocked && `at ${contact.company}`}
@@ -358,7 +366,6 @@ export function ChatArea({
                     <span className="w-2 h-2 rounded-full bg-[#5C45FD] animate-bounce" style={{ animationDelay: "150ms" }}></span>
                     <span className="w-2 h-2 rounded-full bg-[#5C45FD] animate-bounce" style={{ animationDelay: "300ms" }}></span>
                   </span>
-                  <span className="ml-1 font-medium">Searching database...</span>
                 </div>
               )}
 
