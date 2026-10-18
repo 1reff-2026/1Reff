@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import Link from "next/link"
 
-export default function PublicProfile({ params }: { params: { id: string } }) {
+export default async function PublicProfile({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   // Mock data based on the ID
   const profile = {
     name: "Sarah Jenkins",

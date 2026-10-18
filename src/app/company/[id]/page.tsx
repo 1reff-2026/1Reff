@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card"
 import { Button } from "@/components/ui/Button"
 import Link from "next/link"
 
-export default function CompanyProfile({ params }: { params: { id: string } }) {
+export default async function CompanyProfile({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const company = {
     name: "InnovateTech",
     industry: "SaaS",
