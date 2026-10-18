@@ -111,7 +111,7 @@ export function ProfileAsks({ asks }: { asks: ProfileItem[] }) {
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center gap-2 flex-1">
-          <h3 className="font-bold text-foreground text-[14px] uppercase tracking-wide">My Uploaded Referrals</h3>
+          <h3 className="font-bold text-foreground text-[14px] uppercase tracking-wide">Referrals Passed</h3>
           <span className="text-[10px] font-bold bg-[#5C45FD] text-white px-2 py-0.5 rounded-full shadow-sm">{contacts.length}</span>
         </div>
         <div className="flex items-center gap-3">
