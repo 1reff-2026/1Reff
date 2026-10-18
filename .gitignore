@@ -30,8 +30,25 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
+!.env.example
+
+# data files
+*.xlsx
+*.xls
+*.csv
+
+# local scripts & temporary assets
+assign_designations.js
+classify_sectors.js
+merge_location.js
+seed_bni_data.js
+seed_user3.js
+test_search.js
+test-db.js
+demo_accounts.txt
+mascot/
 
 # vercel
 .vercel
